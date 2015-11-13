@@ -1,14 +1,30 @@
+function split_words(words, num_chars) {
+    var f_word = '';
+    var current_count = 0;
+
+    for(var i = 0; i < words.length; ++i ) {
+        if(current_count + words[i].length < num_chars) {
+            f_word += " " + words[i];
+            current_count += words[i].length;
+        }
+        else {
+            f_word += "\n" + words[i];
+            current_count = 0;
+        }
+    }
+
+    return f_word;
+};
+
 $(document).ready(function() {
-	var doc = new jsPDF();
+    var doc = new jsPDF();
 
-	doc.setFontSize(10);
+    doc.setFontSize(10);
 
-	doc.setFont("helvetica");
-	doc.setFontType("bold");
+    doc.setFont("helvetica");
+    doc.setFontType("bold");
 
-	var cards;
-
-
+    var cards;
 
     $.getJSON('data.json', function(data) {
         cards = data;
@@ -20,99 +36,56 @@ $(document).ready(function() {
         num_index_per_page = 3;
         var height = 10;
 
-
-        
-
         for(var i = 0; i <= cards.length / num_index_per_page; i = i + num_index_per_page ) {
 
-        	doc.setFontType("bold");
-        	doc.setFontSize("16");
+            doc.setFontType("bold");
+            doc.setFontSize("16");
 
-        	for(var j=0; j < num_index_per_page; ++j) {
+            for(var j=0; j < num_index_per_page; ++j) {
 
+                doc.rect(buffer, height, index_width,  index_height);
+                
+                split_question = cards[i+j]["question"].split(' ');
 
-        		doc.rect(buffer, height, index_width,  index_height);
-        		
-        		split_question = cards[i+j]["question"].split(' ');
+                f_question = split_words(split_question, 30);
 
-        		var f_question = '';
-        		var current_count = 0;
+                doc.text(buffer+10, ( index_height * j) + (index_height / 2), f_question);
 
-        		for(var k = 0; k < split_question.length; ++k ) {
+                height += index_height + 10;
+            }
 
+            doc.addPage();
+            height = 10;
 
-        			if (current_count + split_question[k].length < 30) {
-        				f_question += " " + split_question[k];
-        				current_count += split_question[k].length;
-        			}
-        			else {
-        				f_question += "\n" + split_question[k];
-        				current_count = 0;
-        			}
-        		
-        		}
+            doc.setFontType("normal");
+            doc.setFontSize("11");
 
-        		console.log( split_question );
-	    		doc.text(buffer+10, ( index_height * j) + (index_height / 2), f_question);
+            for(var j=0; j < num_index_per_page; ++j) {
+                
 
-	    		console.log( cards[i+j]["question"] );
+                doc.rect(buffer, height, index_width,  index_height);
 
-	    		height += index_height + 10;
-        	}
+                for(var k = 0; k < cards[i+j]["answer"].length; ++k) {
 
-        	doc.addPage();
-        	height = 10;
+                    split_answer = cards[i+j]["answer"][k].split(' ');
 
-        	doc.setFontType("normal");
-        	doc.setFontSize("11");
+                    f_answer = split_words(split_answer, 55);
 
-        	for(var j=0; j < num_index_per_page; ++j) {
-        		
+                    doc.text(buffer + 10, ( index_height * j) + (index_height / 2) + (k * 12), f_answer );
 
-        		doc.rect(buffer, height, index_width,  index_height);
+                }
 
+                height += index_height + 10;
+            }
 
-        		for(var k = 0; k < cards[i+j]["answer"].length; ++k) {
+            doc.addPage();
+            height = 10;
+            
+        }
 
-        			split_answer = cards[i+j]["answer"][k].split(' ');
-        			var f_answer = '';
-        			var current_count = 0;
-
-
-        			for(var l = 0; l < split_answer.length; ++l ) {
-
-
-	        			if (current_count + split_answer[l].length < 55) {
-	        				f_answer += split_answer[l] + " ";
-	        				current_count += split_answer[l].length;
-	        			}
-	        			else {
-	        				f_answer += "\n" + split_answer[l]+ " ";
-	        				current_count = 0;
-	        			}
-	        		
-	        		}
-
-
-
-        			doc.text(buffer + 10, ( index_height * j) + (index_height / 2) + (k * 12), f_answer );
-
-        		}
-	    		//doc.text(35, ( index_height * j) + (index_height / 2), cards[i+j]["answers"]);
-
-	    		height += index_height + 10;
-        	}
-
-        	if (i+3 < cards.length / num_index_per_page ) {
-        		doc.addPage();
-        		height = 10;
-        	}
-        	
-    	}
-
-    	doc.output('datauri');
+        doc.output('datauri');
     });
 
 
-	
+    
 });
