@@ -18,9 +18,7 @@ function split_words(words, num_chars) {
 
 $(document).ready(function() {
     var doc = new jsPDF();
-
     doc.setFontSize(10);
-
     doc.setFont("helvetica");
     doc.setFontType("bold");
 
@@ -30,7 +28,6 @@ $(document).ready(function() {
         cards = data;
         index_height = 76.2;
         index_width = 127;
-
         var pdf_width = 210;
         var buffer = (pdf_width / 2) - (index_width ) / 2 ;
         num_index_per_page = 3;
@@ -62,7 +59,6 @@ $(document).ready(function() {
 
             for(var j=0; j < num_index_per_page; ++j) {
                 
-
                 doc.rect(buffer, height, index_width,  index_height);
 
                 for(var k = 0; k < cards[i+j]["answer"].length; ++k) {
@@ -72,7 +68,6 @@ $(document).ready(function() {
                     f_answer = split_words(split_answer, 55);
 
                     doc.text(buffer + 10, ( index_height * j) + (index_height / 2) + (k * 12), f_answer );
-
                 }
 
                 height += index_height + 10;
@@ -84,8 +79,5 @@ $(document).ready(function() {
         }
 
         doc.output('datauri');
-    });
-
-
-    
+    });    
 });
